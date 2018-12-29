@@ -135,7 +135,7 @@
             ship.x += ship.thrust.x;
             ship.y += ship.thrust.y;
         
-        // handle edge of screen
+        // handle edge of screen, do not let go the ship out of screenn
             if (ship.x < 0 - ship.r) {
                 ship.x = canv.width + ship.r;
             } else if (ship.x > canv.width + ship.r) {
