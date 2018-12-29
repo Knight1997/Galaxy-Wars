@@ -73,7 +73,7 @@
     
     function update(){
         //draw the space screen
-        ctx.fillStyle="#129Cf3";
+        ctx.fillStyle="#129CF3";
         ctx.fillRect(0, 0, canv.width, canv.height);
         
         
@@ -123,8 +123,8 @@
                 ctx.stroke();
             } else {
                 // apply friction (slow the ship down when not thrusting)
-                ship.thrust.x -= FRICTION * ship.thrust.x / FPS;
-                ship.thrust.y -= FRICTION * ship.thrust.y / FPS;
+                ship.thrust.x -= FRICTION * ship.thrust.x / FPS; //rate of change of speed is dependent on the speed itself.
+                ship.thrust.y -= FRICTION * ship.thrust.y / FPS; //therfore it doesnt experience negative acceleration
             }
 
         
@@ -134,6 +134,18 @@
         // move the ship
             ship.x += ship.thrust.x;
             ship.y += ship.thrust.y;
+        
+        // handle edge of screen
+            if (ship.x < 0 - ship.r) {
+                ship.x = canv.width + ship.r;
+            } else if (ship.x > canv.width + ship.r) {
+                ship.x = 0 - ship.r;
+            }
+            if (ship.y < 0 - ship.r) {
+                ship.y = canv.height + ship.r;
+            } else if (ship.y > canv.height + ship.r) {
+                ship.y = 0 - ship.r;
+            }
 
     }
     
