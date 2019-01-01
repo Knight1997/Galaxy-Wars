@@ -20,7 +20,7 @@
     const SHIP_INV_DUR = 3; // duration of the ship's invisibility in seconds
     const FRICTION = 0.7; // friction coefficient of space (0 = no friction, 1 = lots of friction)
     
-    const ROID_NUM = 4; // starting number of asteroids
+    const ROID_NUM = 1; // starting number of asteroids
     const ROID_SPD = 50; // max starting speed of asteroids in pixels per second
     const ROID_SIZE = 100; // starting size of asteroids in pixels
     const ROID_VERT = 10; // average number of vertices on each asteroid
@@ -40,8 +40,12 @@
     var canv = document.getElementById("gameCanvas");
     var ctx = canv.getContext("2d");
     
+    // set up the game parameters
+        var level, roids, ship;
+        newGame();
+    
     // set up the spaceship object
-        var ship = newShip();
+       // var ship = newShip();
     
     //set up loop call update() after every 1000/fps seconds
     setInterval(update, 1000/FPS);
@@ -429,7 +433,7 @@
     function createAsteroidBelt() {
             roids = [];
             var x, y;
-            for (var i = 0; i < ROID_NUM; i++) {
+            for (var i = 0; i < ROID_NUM + level; i++) {
                 // random asteroid location (not touching spaceship)
                 do {
                     x = Math.floor(Math.random() * canv.width);
@@ -440,12 +444,13 @@
         }
     
     function newAsteroid(x, y, r) {
+        var lvlMult = 1 + 0.1 * level; //increses speed with level linearly
         //class / object of astroid
             var roid = {
                 x: x,
                 y: y,
-                xv: Math.random() * ROID_SPD / FPS * (Math.random() < 0.5 ? 1 : -1),
-                yv: Math.random() * ROID_SPD / FPS * (Math.random() < 0.5 ? 1 : -1),
+                xv: Math.random() * ROID_SPD * lvlMult / FPS * (Math.random() < 0.5 ? 1 : -1),
+                yv: Math.random() * ROID_SPD * lvlMult / FPS * (Math.random() < 0.5 ? 1 : -1),
                 a: Math.random() * Math.PI * 2, // in radians
                 r: r,
                 offs: [],
@@ -476,6 +481,12 @@
 
             // destroy the asteroid
             roids.splice(index, 1);
+        
+            // new level when no more asteroids
+            if (roids.length == 0) {
+                level++;
+                newLevel();
+            }
         }
     
     function shootLaser() {
@@ -494,6 +505,17 @@
             // prevent further shooting
             ship.canShoot = false;
         }
+    
+    function newGame() {
+            level = 0;
+            ship = newShip();
+            newLevel();
+        }
+    
+     function newLevel() {
+            createAsteroidBelt();
+        }
+
     
      
     
