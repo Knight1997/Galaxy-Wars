@@ -432,7 +432,7 @@
             }
         
         // draw the game text
-            if (textAlpha >= 0) {
+            if (textAlpha >= 0 && !ship.dead) {
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillStyle = "rgba(0, 0, 0, " + textAlpha + ")";
@@ -442,7 +442,7 @@
             } else if (ship.dead) {
                 // after "game over" fades, start a new game
                 newGame();
-                console.log("new game is called!");
+                console.log("new game is called!")
             }
 
             // draw the lives
