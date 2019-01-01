@@ -442,6 +442,7 @@
             } else if (ship.dead) {
                 // after "game over" fades, start a new game
                 newGame();
+                console.log("new game is called!");
             }
 
             // draw the lives
@@ -591,7 +592,7 @@
             score=0
             lives = GAME_LIVES;
             ship = newShip();
-        
+            it=0;
             // get the high score from local storage
             var scoreStr = localStorage.getItem(SAVE_KEY_SCORE);
             if (scoreStr == null) {
