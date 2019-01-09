@@ -44,6 +44,9 @@
     
     const SAVE_KEY_SCORE = "highscore"; // save key for local storage of high score
     
+    // AI Developer Flag flags
+    const AUTOMATION_ON = true;
+    
     
     //screen color variable
     var screenColor=["#129CF3", "#538565", "#09ef3d", "#fffb00"];
@@ -76,7 +79,7 @@
         }
     
     function keyDown(/** @type {KeyboardEvent} */ ev) {
-        if (ship.dead) {
+        if (ship.dead || AUTOMATION_ON) {
                 return;
             }
         
@@ -97,7 +100,7 @@
         }
 
         function keyUp(/** @type {KeyboardEvent} */ ev) {
-        if (ship.dead) {
+        if (ship.dead || AUTOMATION_ON) {
                 return;
             }
             switch(ev.keyCode) {
@@ -140,6 +143,11 @@
     function update(){
         var blinkOn = ship.blinkNum % 2 == 0;
         var exploding = ship.explodeTime > 0;
+        
+        // use the neural network to rotate the ship and shoot
+            if (AUTOMATION_ON) {
+                // TODO control ship
+            }
         
         //draw the space screen
         ctx.fillStyle=screenColor[it];
