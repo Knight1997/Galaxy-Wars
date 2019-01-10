@@ -3,7 +3,41 @@
 /***********************
     MATRIX FUNCTIONS
 ***********************/
+class NeuralNetwork {
+    constructor(numInputs, numHidden, numOutputs) {
+        this._inputs = [];
+        this._hidden = [];
+        this._numInputs = numInputs;
+        this._numHidden = numHidden;
+        this._numOutputs = numOutputs;
+        this._bias0 = new Matrix(1, this._numHidden);
+        this._bias1 = new Matrix(1, this._numOutputs);
+        this._weights0 = new Matrix(this._numInputs, this._numHidden);
+        this._weights1 = new Matrix(this._numHidden, this._numOutputs);
 
+        // randomise the initial weights
+        this._bias0.randomWeights();
+        this._bias1.randomWeights();
+        this._weights0.randomWeights();
+        this._weights1.randomWeights();
+    }
+
+    get weights0() {
+        return this._weights0;
+    }
+
+    set weights0(weights) {
+        this._weights0 = weights;
+    }
+
+    get weights1() {
+        return this._weights1;
+    }
+
+    set weights1(weights) {
+        this._weights1 = weights;
+    }
+}
 class Matrix {
     constructor(rows, cols, data = []) {
         this._rows = rows;
