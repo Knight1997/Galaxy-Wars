@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Galaxy Wars</title>
     <style></style>
-    <script type="text/javascript" src="./neural-network-01-matrices.js"></script>
+    <script type="text/javascript" src="./neural-network.js"></script>
 </head>
 
 <body>
@@ -46,7 +46,7 @@
     const SAVE_KEY_SCORE = "highscore"; // save key for local storage of high score
     
     // AI Developer Flag flags
-    const AUTOMATION_ON = false;
+    const AUTOMATION_ON = true;
     
     // neural network parameters
     const NUM_INPUTS = 2;
@@ -66,13 +66,15 @@
         var level, lives, roids, ship, text, textAlpha, score, scoreHigh;
         newGame();
     
-    
+    var nn;
     // set up the neural network
         if (AUTOMATION_ON) {
             // TODO neural network
             nn = new NeuralNetwork(NUM_INPUTS, NUM_HIDDEN, NUM_OUTPUTS);
-            console.table(m1.data);
-            console.table(Matrix.transpose(m1).data);
+            console.table(nn.weights0.data);
+            console.table(nn.weights1.data);
+            nn.feedForward([0,1]);
+            //console.table(Matrix.transpose(m1).data);
         }
     
     // set up the spaceship object

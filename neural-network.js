@@ -37,6 +37,24 @@ class NeuralNetwork {
     set weights1(weights) {
         this._weights1 = weights;
     }
+    
+    feedForward(inputArray) {
+        // convert input array to a matrix
+        this.inputs = Matrix.convertFromArray(inputArray);
+
+        // find the hidden values and apply the activation function
+        this.hidden = Matrix.dot(this.inputs, this.weights0);
+        this.hidden = Matrix.add(this.hidden, this.bias0); // apply bias
+        this.hidden = Matrix.map(this.hidden, x => sigmoid(x));
+
+        // find the output values and apply the activation function
+        let outputs = Matrix.dot(this.hidden, this.weights1);
+        outputs = Matrix.add(outputs, this.bias1); // apply bias
+        outputs = Matrix.map(outputs, x => sigmoid(x));
+
+        return outputs;
+    }
+    
 }
 class Matrix {
     constructor(rows, cols, data = []) {
@@ -115,7 +133,7 @@ class Matrix {
         return m;
     }
 
-    // apply a function to each cell of the given matrix
+    // apply a function to each cell of the given matrix(used for sigmoid activation function)
     static map(m0, mFunction) {
         let m = new Matrix(m0.rows, m0.cols);
         for (let i = 0; i < m.rows; i++) {
