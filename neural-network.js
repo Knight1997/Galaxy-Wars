@@ -55,6 +55,44 @@ class NeuralNetwork {
         return outputs;
     }
     
+    train(inputArray, targetArray) {
+        // feed the input data through the network
+        let outputs = this.feedForward(inputArray);
+
+        // calculate the output errors (target - output)
+        let targets = Matrix.convertFromArray(targetArray);
+        let outputErrors = Matrix.subtract(targets, outputs);
+
+        // calculate the deltas (errors * derivitive of the output)
+        let outputDerivs = Matrix.map(outputs, x => sigmoid(x, true));
+        let outputDeltas = Matrix.multiply(outputErrors, outputDerivs);
+
+        // calculate hidden layer errors (deltas "dot" transpose of weights1)
+        let weights1T = Matrix.transpose(this.weights1);
+        let hiddenErrors = Matrix.dot(outputDeltas, weights1T);
+
+        // calculate the hidden deltas (errors * derivitive of hidden)
+        let hiddenDerivs = Matrix.map(this.hidden, x => sigmoid(x, true));
+        let hiddenDeltas = Matrix.multiply(hiddenErrors, hiddenDerivs);
+
+        // update the weights (add transpose of layers "dot" deltas)
+        let hiddenT = Matrix.transpose(this.hidden);
+        this.weights1 = Matrix.add(this.weights1, Matrix.dot(hiddenT, outputDeltas));
+        let inputsT = Matrix.transpose(this.inputs);
+        this.weights0 = Matrix.add(this.weights0, Matrix.dot(inputsT, hiddenDeltas));
+
+        // update bias
+        this.bias1 = Matrix.add(this.bias1, outputDeltas);
+        this.bias0 = Matrix.add(this.bias0, hiddenDeltas);
+    }
+    
+    
+}
+function sigmoid(x, deriv = false) {
+    if (deriv) {
+        return x * (1 - x); // where x = sigmoid(x)
+    }
+    return 1 / (1 + Math.exp(-x));
 }
 class Matrix {
     constructor(rows, cols, data = []) {
@@ -132,7 +170,7 @@ class Matrix {
         }
         return m;
     }
-
+    
     // apply a function to each cell of the given matrix(used for sigmoid activation function)
     static map(m0, mFunction) {
         let m = new Matrix(m0.rows, m0.cols);
