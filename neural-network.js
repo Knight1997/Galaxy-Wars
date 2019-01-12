@@ -1,8 +1,5 @@
 "use strict";
 
-/***********************
-    MATRIX FUNCTIONS
-***********************/
 class NeuralNetwork {
     constructor(numInputs, numHidden, numOutputs) {
         this._inputs = [];
@@ -22,6 +19,38 @@ class NeuralNetwork {
         this._weights1.randomWeights();
     }
 
+    get inputs() {
+        return this._inputs;
+    }
+
+    set inputs(inputs) {
+        this._inputs = inputs;
+    }
+
+    get hidden() {
+        return this._hidden;
+    }
+
+    set hidden(hidden) {
+        this._hidden = hidden;
+    }
+
+    get bias0() {
+        return this._bias0;
+    }
+
+    set bias0(bias) {
+        this._bias0 = bias;
+    }
+
+    get bias1() {
+        return this._bias1;
+    }
+
+    set bias1(bias) {
+        this._bias1 = bias;
+    }
+
     get weights0() {
         return this._weights0;
     }
@@ -37,7 +66,7 @@ class NeuralNetwork {
     set weights1(weights) {
         this._weights1 = weights;
     }
-    
+
     feedForward(inputArray) {
         // convert input array to a matrix
         this.inputs = Matrix.convertFromArray(inputArray);
@@ -54,7 +83,7 @@ class NeuralNetwork {
 
         return outputs;
     }
-    
+
     train(inputArray, targetArray) {
         // feed the input data through the network
         let outputs = this.feedForward(inputArray);
@@ -85,15 +114,19 @@ class NeuralNetwork {
         this.bias1 = Matrix.add(this.bias1, outputDeltas);
         this.bias0 = Matrix.add(this.bias0, hiddenDeltas);
     }
-    
-    
 }
+
 function sigmoid(x, deriv = false) {
     if (deriv) {
         return x * (1 - x); // where x = sigmoid(x)
     }
     return 1 / (1 + Math.exp(-x));
 }
+
+/***********************
+    MATRIX FUNCTIONS
+***********************/
+
 class Matrix {
     constructor(rows, cols, data = []) {
         this._rows = rows;
@@ -170,8 +203,8 @@ class Matrix {
         }
         return m;
     }
-    
-    // apply a function to each cell of the given matrix(used for sigmoid activation function)
+
+    // apply a function to each cell of the given matrix
     static map(m0, mFunction) {
         let m = new Matrix(m0.rows, m0.cols);
         for (let i = 0; i < m.rows; i++) {
