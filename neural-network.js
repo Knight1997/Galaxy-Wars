@@ -83,6 +83,7 @@ class NeuralNetwork {
 
         return outputs;
     }
+    
 
     train(inputArray, targetArray) {
         // feed the input data through the network
