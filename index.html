@@ -50,8 +50,8 @@
     
     
     // neural network parameters
-    const NUM_INPUTS = 2;
-    const NUM_HIDDEN = 5;
+    const NUM_INPUTS = 4;
+    const NUM_HIDDEN = 20;
     const NUM_OUTPUTS = 1;
     const NUM_SAMPLES = 100000;
     
@@ -104,6 +104,21 @@
             return (diff + Math.PI * 2) % (Math.PI * 2);
         }
 
+    
+    function normaliseInput(roidX, roidY, roidA, shipA) {
+            // normalise the values to between 0 and 1
+            let input = [];
+            input[0] = (roidX + ROID_SIZE / 2) / (canv.width + ROID_SIZE);
+            input[1] = (roidY + ROID_SIZE / 2) / (canv.height + ROID_SIZE);
+            input[2] = roidA / (Math.PI * 2);
+            input[3] = shipA / (Math.PI * 2);
+            return input;
+        }
+    
+    function rotateShip(right) {
+            let sign = right ? -1 : 1;
+            ship.rot = SHIP_TURN_SPD / 180 * Math.PI / FPS * sign;
+        }
     // set up the spaceship object
        // var ship = newShip();
     
