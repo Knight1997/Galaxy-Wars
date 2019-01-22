@@ -46,7 +46,7 @@
     const SAVE_KEY_SCORE = "highscore"; // save key for local storage of high score
     
     // AI Developer Flag flags
-    const AUTOMATION_ON = true;
+    const AUTOMATION_ON = false;
     
     
     // neural network parameters
@@ -54,6 +54,10 @@
     const NUM_HIDDEN = 20;
     const NUM_OUTPUTS = 1;
     const NUM_SAMPLES = 100000;
+    const OUTPUT_LEFT = 0; // expected neural output for turning left
+    const OUTPUT_RIGHT = 1; // expected neural output for turning right
+    const OUTPUT_THRESHOLD = 0.05; // how close the prediction must be to commit to a turn
+    const RATE_OF_FIRE = 15; // shots per second
     
     //screen color variable
     var screenColor=["#129CF3", "#538565", "#09ef3d", "#fffb00"];
@@ -67,7 +71,7 @@
         var level, lives, roids, ship, text, textAlpha, score, scoreHigh;
         newGame();
     
-    var nn;
+    var nn,aiShootTime = 0;
     // set up the neural network
         if (AUTOMATION_ON) {
             nn = new NeuralNetwork(NUM_INPUTS, NUM_HIDDEN, NUM_OUTPUTS);
@@ -117,7 +121,7 @@
     
     function rotateShip(right) {
             let sign = right ? -1 : 1;
-            ship.rot = SHIP_TURN_SPD / 180 * Math.PI / FPS * sign;
+            ship.rot = TURN_SPEED / 180 * Math.PI / FPS * sign;
         }
     // set up the spaceship object
        // var ship = newShip();
@@ -147,13 +151,13 @@
                     shootLaser();
                     break;
                 case 37: // left arrow (rotate ship left)
-                    ship.rot = TURN_SPEED / 180 * Math.PI / FPS;
+                    rotateShip(false);
                     break;
                 case 38: // up arrow (thrust the ship forward)
                     ship.thrusting = true;
                     break;
                 case 39: // right arrow (rotate ship right)
-                    ship.rot = -TURN_SPEED / 180 * Math.PI / FPS;
+                    rotateShip(true);
                     break;
             }
         }
@@ -205,7 +209,45 @@
         
         // use the neural network to rotate the ship and shoot
             if (AUTOMATION_ON) {
-    
+                // compute the closest asteroid
+                let c = 0; // closest index
+                let dist0 = distBetweenPoints(ship.x, ship.y, roids[0].x, roids[0].y);
+                for (let i = 1; i < roids.length; i++) {
+                    let dist1 = distBetweenPoints(ship.x, ship.y, roids[i].x, roids[i].y);
+                    if (dist1 < dist0) {
+                        dist0 = dist1;
+                        c = i;
+                    }
+                }
+                
+                // make a prediction based on current data
+                let ax = roids[c].x;
+                let ay = roids[c].y;
+                let sa = ship.a;
+                let sx = ship.x;
+                let sy = ship.y;
+                let angle = angleToPoint(sx, sy, sa, ax, ay);
+                let predict = nn.feedForward(normaliseInput(ax, ay, angle, sa)).data[0][0];
+
+                // make a turn
+                let dLeft = Math.abs(predict - OUTPUT_LEFT);
+                let dRight = Math.abs(predict - OUTPUT_RIGHT);
+                if (dLeft < OUTPUT_THRESHOLD) {
+                    rotateShip(false);
+                } else if (dRight < OUTPUT_THRESHOLD) {
+                    rotateShip(true);
+                } else {
+                    ship.rot = 0; // stop rotating
+                }
+
+                // shoot the laser
+                if (aiShootTime == 0) {
+                    aiShootTime = Math.ceil(FPS / RATE_OF_FIRE);
+                    ship.canShoot = true;
+                    shootLaser();
+                } else {
+                    aiShootTime--;
+                }
             }
         
         //draw the space screen
@@ -314,7 +356,14 @@
 
                 // rotate the ship
                 ship.a += ship.rot;
-
+                
+                // keep the angle between 0 and 360 (two pi)
+                if (ship.a < 0) {
+                    ship.a += (Math.PI * 2);
+                } else if (ship.a >= (Math.PI * 2)) {
+                    ship.a -= (Math.PI * 2);
+                }
+                
                 // move the ship
                 ship.x += ship.thrust.x;
                 ship.y += ship.thrust.y;
